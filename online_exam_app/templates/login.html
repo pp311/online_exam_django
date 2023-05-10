@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Đăng nhập</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{% static 'login.css' %}" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <h1>ĐĂNG NHẬP</h1>
+    <form method="post">
+      <!-- <input type="text" id="username" name="username" placeholder="Tên đăng nhập" required> -->
+      <!-- <input type="password" id="password" name="password" placeholder="Mật khẩu" required> -->
+      <!-- <% String err=request.getParameter("err"); if(err !=null && err.equals("1")) { out.print("<p -->
+      <!--   style='color:red; margin-bottom:5px;'>Sai tên tài khoản hoặc mật khẩu</p>"); -->
+      <!--   } -->
+      {% csrf_token %}
+      {{ form }}
+      <button class="submit-btn" type="submit">Đăng nhập</button>
+    </form>
+  </div>
+</body>
+
+</html>
