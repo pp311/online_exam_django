@@ -23,7 +23,7 @@ class Test(models.Model):
     TestName = models.TextField()
     Name = models.CharField(max_length=255)
     Subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    User = models.ManyToManyField(User)
+    User = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
 class Question(models.Model):
     IDQuestion = models.AutoField(primary_key=True)
