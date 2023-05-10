@@ -35,6 +35,8 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+bin/
+online_exam/bin/
 build/
 develop-eggs/
 dist/
