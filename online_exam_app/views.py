@@ -6,8 +6,9 @@ from .models import UserProfile
 from django.views.generic import TemplateView, View, FormView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from .forms import LoginForm, CreateUserForm
+from .forms import LoginForm, CreateUserForm, PersonalInfoForm
 # Create your views here.
 def main(request):
   return HttpResponse("Home Page")
@@ -30,13 +31,19 @@ class LoginPageView(View):
                 is_superuser = user.is_superuser
                 request.session['username'] = username
                 request.session['position'] = 'admin' if is_superuser else 'user'
-                request.session['name'] = user.userprofile.Name
+                #request.session['name'] = user.userprofile.Name
                 request.session.modified = True
                 return redirect('/')
             else:
                 return HttpResponse("Invalid username or password")
         else:
             return HttpResponse("Invalid form")
+
+class logOut(LoginRequiredMixin, View):
+    login_url = 'login'
+    def get(self, request):
+        logout(request)
+        return redirect('/login/')
 
 class CreateAccountPageView(FormView):
     template_name = 'create_account.html'
@@ -63,3 +70,42 @@ class CreateAccountPageView(FormView):
 
     def form_invalid(self, form):
         print("loi")
+
+class PersonalInfoPageView(View):
+    form_class = PersonalInfoForm
+    template_name = 'personal_info.html'
+    def get(self, request):
+        err_msg = ''
+        success_msg = ''
+        if request.GET.get('err') == '1':
+            err_msg = 'Xác nhận mật khẩu không khớp'
+        elif request.GET.get('err') == '2':
+            err_msg = 'Mật khẩu không chính xác'
+        elif request.GET.get('success') == '1':
+            success_msg = 'Cập nhật thông tin thành công'
+        elif request.GET.get('success') == '2':
+            success_msg = 'Đổi mật khẩu thành công'
+        user = User.objects.get(username=request.session['username'])
+        userprofile = UserProfile.objects.get(User=user)
+        return render(request, self.template_name, {'personal_info_form': PersonalInfoForm(instance=userprofile), 'err_msg': err_msg, 'success_msg': success_msg})
+
+    def post(self, request):
+        if 'change-info-submit-btn' in request.POST:
+            personal_info_form = PersonalInfoForm(request.POST, instance=UserProfile.objects.get(User=User.objects.get(username=request.session['username'])))
+            if personal_info_form.is_valid():
+                personal_info_form.save()
+                return redirect('/personal-info/?success=1')
+            else:
+                return HttpResponse("Invalid form")
+        elif 'change-password-submit-btn' in request.POST:
+            #neu xac nhan mat khau khong khop
+            if request.POST['new-password'] != request.POST['new-password2']:
+                return redirect('/personal-info/?err=1')
+            user = User.objects.get(username=request.session['username'])
+            #neu mat khau khong chinh xac
+            if not user.check_password(request.POST['current-password']):
+                return redirect('/personal-info/?err=2')
+
+            user.set_password(request.POST['new-password'])
+            user.save()
+            return redirect('/personal-info/?success=2')
