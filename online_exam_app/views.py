@@ -21,22 +21,25 @@ class LoginPageView(View):
 
     def post(self,request):
         form = LoginForm(request, data=request.POST)
+        #form  = self.form_class(request.POST)
+        #form.is_valid()
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password'] 
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                user_profile = UserProfile.objects.get(User=user)
                 is_superuser = user.is_superuser
                 request.session['username'] = username
-                request.session['position'] = 'admin' if is_superuser else 'user'
-                request.session['name'] = user.userprofile.Name
+                request.session['position'] = user_profile.Position
+                request.session['name'] = user_profile.Name
                 request.session.modified = True
                 return redirect('/')
             else:
                 return HttpResponse("Invalid username or password")
         else:
-            return HttpResponse("Invalid form")
+           return HttpResponse("Invalid form")
 
 class CreateAccountPageView(FormView):
     template_name = 'create_account.html'
