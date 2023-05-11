@@ -4,12 +4,13 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     User = models.OneToOneField(User, on_delete=models.CASCADE)
-    Name = models.TextField()
-    Gender = models.BooleanField()
-    Code = models.CharField(max_length=9)
-    Class = models.CharField(max_length=12)
-    Faculty = models.TextField()
-    Position = models.TextField()
+    Name = models.TextField(null=True)
+    Gender = models.BooleanField(null=True)
+    Code = models.CharField(max_length=9, null=True)
+    Class = models.CharField(max_length=12, null=True)
+    Faculty = models.TextField(null=True)
+    Position = models.TextField(null=True)
+
 
 class Subject(models.Model):
     IDSubject = models.AutoField(primary_key=True)
