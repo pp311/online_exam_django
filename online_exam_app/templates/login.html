@@ -20,6 +20,9 @@
       <!--   } -->
       {% csrf_token %}
       {{ form }}
+        {% if request.GET.err == '1' %}
+        <p style="color:red; margin-bottom:5px;">Sai tên tài khoản hoặc mật khẩu</p>
+        {% endif %}
       <button class="submit-btn" type="submit">Đăng nhập</button>
     </form>
   </div>

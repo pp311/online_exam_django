@@ -40,7 +40,7 @@ class LoginPageView(View):
             else:
                 return HttpResponse("Invalid username or password")
         else:
-           return HttpResponse("Invalid form")
+           return redirect('/login/?err=1')
 
 class logOut(LoginRequiredMixin, View):
     login_url = 'login'
@@ -51,15 +51,12 @@ class logOut(LoginRequiredMixin, View):
 class CreateAccountPageView(FormView):
     template_name = 'create_account.html'
     form_class = CreateUserForm
-    success_url = '/create-account/?err=0&success=1'
-    error_url = '/create-account/?err=0&success=0'
+    success_url = '/create-account/?success=1'
     def form_valid(self, form):
-        print("haha")
         if User.objects.filter(username=form.cleaned_data["username"]).exists():
             return redirect('/create-account/?err=1')
         if UserProfile.objects.filter(Code=form.cleaned_data["code"]).exists():
             return redirect('/create-account/?err=2')
-        print("hehe")
         user = User.objects.create_user(
             username=form.cleaned_data["username"],
             password=form.cleaned_data["password"],
