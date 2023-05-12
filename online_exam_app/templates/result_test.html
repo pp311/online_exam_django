@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Kết quả làm bài</title>
+  <link rel="stylesheet" href="{% static 'result_test.css' %}">
+</head>
+
+<body>
+  {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Kết quả làm bài</h2>
+        <div class="result">
+            <table>
+                <thead>
+                  <tr>
+                    
+                    <th>Tên bài thi</th>
+                    <th>Điểm</th>
+                    <th>Thời gian nộp bài</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>          
+                       <td>{{result.IDResult}}</td>
+                       <td>{{result.Grade}}</td>
+                       <td>{{result.SubmitTime}}</td>
+                    </tr>        
+         
+                </tbody>
+              </table>
+    </div>
+</body>
+
+</html>

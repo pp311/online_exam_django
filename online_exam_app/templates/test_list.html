@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Danh sách đề thi</title>
+  <link rel="stylesheet" href="{% static 'test_list.css' %}">
+</head>
+
+<body>
+  {% include 'navbar.html' %}
+  <div class="container">
+    <h1>Danh sách đề thi</h1>
+    <div class="list">
+      <table>
+        <thead>
+          <tr>
+            <th>Tên bài thi</th>
+            <th>Số lượng câu hỏi</th>
+            <th>Thời gian làm bài</th>
+            <th>Thời gian bắt đầu</th>
+            <th>{{ user_action }}</th>
+            {% if request.session.position == 'admin' %} 
+            	<th>Xóa</th>
+            {% endif %}
+            
+          </tr>
+        </thead>
+        <tbody>
+	        {% for test in test_list %}
+	        	<tr>
+		            <td>{{test.IDTest}}</td>
+		            <td>{{test.NumberQuestion}} câu</td>
+                <td>{{test.Time}} phút</td>
+                <td>{{test.DateTest}}</td>
+                <td> 
+                {% if request.session.position == 'student' %} 
+                  <a href = ''>{{ user_action }}</a>
+                {% else %}
+                  <a href = ''>{{ user_action }}</a>
+                {% endif %}
+              </td>
+              <td> 
+                {% if request.session.position == 'admin' %} 
+                  <a href = ''> Xóa</a>
+              
+                {% endif %}
+              </td>
+            </tr>
+          {%  endfor  %}
+		            
+		          
+		          
+	    
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+
+</html>

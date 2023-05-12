@@ -15,6 +15,8 @@ class UserProfile(models.Model):
 class Subject(models.Model):
     IDSubject = models.AutoField(primary_key=True)
     SubjectName = models.TextField()
+    def __str__(self):
+        return self.SubjectName
 
 class Test(models.Model):
     IDTest = models.AutoField(primary_key=True)
@@ -22,21 +24,26 @@ class Test(models.Model):
     NumberQuestion = models.IntegerField()
     Time = models.IntegerField()
     TestName = models.TextField()
-    Name = models.CharField(max_length=255)
     Subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     User = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-
+    def __str__(self):
+        return self.TestName
+    
 class Question(models.Model):
     IDQuestion = models.AutoField(primary_key=True)
     Content = models.TextField()
     MultipleChoice = models.BooleanField()
     Test = models.ForeignKey(Test, on_delete=models.CASCADE)
-
+    def __str__(self):
+        return str(self.IDQuestion)
+    
 class Answer(models.Model):
     IDAnswer = models.AutoField(primary_key=True)
     Content = models.TextField()
     IsCorrectAnswer = models.BooleanField()
     Question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.Question.IDQuestion) + " " + str(self.IDAnswer)
 
 class Result(models.Model):
     IDResult = models.AutoField(primary_key=True)
