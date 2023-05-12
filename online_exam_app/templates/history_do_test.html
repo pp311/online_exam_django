@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Lịch sử làm bài</title>
+  <link rel="stylesheet" href="{% static 'lichsulambai.css' %}">
+</head>
+
+<body>
+  {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Danh sách bài thi đã bài</h2>
+        <div class="history">
+            <table>
+                <thead>
+                  <tr>
+                    
+                    <th>Tên bài thi</th>
+                    <th>Điểm</th>
+                    <th>Thời gian nộp bài</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>          
+                       <td>{{result_list.IDResult}}</td>
+                       <td>{{result_list.Grade}}</td>
+                       <td>{{result_list.SubmitTime}}</td>
+                    </tr>        
+         
+                </tbody>
+              </table>
+    </div>
+</body>
+
+</html>

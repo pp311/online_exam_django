@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.models import User
 from .models import UserProfile, Subject, Test, Question, Answer
+from .models import UserProfile,Test, Result
 from django.views.generic import TemplateView, View, FormView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -156,3 +157,23 @@ class CreateTestPageView(View):
                         is_correct = True
                     list_answer.append(Answer.objects.create(Question=list_question[i], Content=statements[j], IsCorrectAnswer=is_correct))
 
+        
+class TestListPageView(View):
+    template_name = 'test_list.html'
+    def get(self, request): 
+        user_action = "Làm bài" if request.session['position'] == 'student' else 'Xem chi tiết'
+        test_list = Test.objects.all().values()
+        return render(request, self.template_name, {'user_action':user_action,'test_list':test_list})
+class HistoryDoTestPageView(View):
+    template_name = 'history_do_test.html'
+    def get(self, request):
+        user = User.objects.get(username=request.session['username'])
+        result_list = Result.objects.get(User=user)
+        return render(request,self.template_name,{'user':user,'result_list':result_list})
+class ResultTestPageView(View):
+    template_name = 'result_test.html'
+    def get(self, request):
+        test = Test.objects.get()
+        result = Result.objects.get(Test=test)
+        history = result.History.all().values()
+        return render(request,self.template_name, {'result':result,'history':history})
