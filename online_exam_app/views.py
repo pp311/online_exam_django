@@ -2,13 +2,14 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.models import User
-from .models import UserProfile
+from .models import UserProfile, Subject, Test, Question, Answer
 from django.views.generic import TemplateView, View, FormView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from .forms import LoginForm, CreateUserForm, PersonalInfoForm
+import datetime
 # Create your views here.
 def main(request):
   return HttpResponse("Home Page")
@@ -109,3 +110,49 @@ class PersonalInfoPageView(View):
             user.set_password(request.POST['new-password'])
             user.save()
             return redirect('/personal-info/?success=2')
+
+
+class CreateTestPageView(View):
+    template_name = 'create_test.html'
+    def get(self, request):
+        subject_list = Subject.objects.all().values()
+        current_datetime = current_datetime=datetime.datetime.today().strftime("%Y-%m-%dT%H:%M")
+        return render(request, self.template_name, {'subject_list': subject_list, 'current_datetime': current_datetime})
+    def post(self, request):
+        test_name = request.POST['test-name']
+        subject_id = int(request.POST['subject-test']) 
+        date_test = request.POST['date-test']
+        time_test = int(request.POST['time-in-minutes'])
+        number_of_questions = int(request.POST['number-of-questions'])
+        
+        user = User.objects.get(username=request.session['username'])
+        subject = Subject.objects.get(IDSubject=subject_id)
+
+        test = Test.objects.create(User=user, Subject=subject, TestName=test_name, DateTest=date_test, Time=time_test, NumberQuestion=number_of_questions)
+        list_question = []
+        list_answer = []
+        list_multichoice = request.POST.getlist('cb')
+        h = 0
+        for i in range(number_of_questions):
+            statements = request.POST.getlist('txt' + str(i+1))
+            if list_multichoice != None and len(list_multichoice) > h and int(list_multichoice[h]) == i+1:
+                list_question.append(Question.objects.create(Test=test, Content=statements[0], MultipleChoice=True))
+                h += 1
+                cb_answers = request.POST.getlist('cb' + str(i+1))
+                k = 0
+                for j in range(1, len(statements)):
+                    is_correct = False
+                    if len(cb_answers) > k and int(cb_answers[k]) == j:
+                        is_correct = True
+                        k += 1 
+                    list_answer.append(Answer.objects.create(Question=list_question[i], Content=statements[j], IsCorrectAnswer=is_correct))
+            
+            else:
+                list_question.append(Question.objects.create(Test=test, Content=statements, MultipleChoice=False))
+                answer = request.POST['group' + str(i+1)]
+                for j in range(1, len(statements)):
+                    is_correct = False
+                    if int(answer) == j:
+                        is_correct = True
+                    list_answer.append(Answer.objects.create(Question=list_question[i], Content=statements[j], IsCorrectAnswer=is_correct))
+
