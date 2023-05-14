@@ -38,7 +38,7 @@
                 {% if request.session.position == 'student' %} 
                   <a href = ''>{{ user_action }}</a>
                 {% else %}
-                  <a href = ''>{{ user_action }}</a>
+                  <a href = '/view-test-all-students/?id-test={{ test.IDTest }}'>{{ user_action }}</a>
                 {% endif %}
               </td>
               <td> 

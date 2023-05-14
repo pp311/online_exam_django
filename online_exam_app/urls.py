@@ -12,4 +12,5 @@ urlpatterns = [
     path('test-list/', views.TestListPageView.as_view(), name='test_list'),
     path('history/', views.HistoryDoTestPageView.as_view(), name='history'),
     path('result/', views.ResultTestPageView.as_view(), name='result'),
+    path('view-test-all-students/', views.ViewTestAllStudentsPageView.as_view(), name='view_test_all_students'),
 ]

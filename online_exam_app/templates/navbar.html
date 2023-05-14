@@ -65,13 +65,13 @@
   {% if request.session.position == 'student' %}
   <div class="nav-group nav-left">
     <a href="lietkedethi" class="nav-item">Làm bài thi</a>
-    <a href="LichSuLamBaiServlet" class="nav-item">Lịch Sử Làm Bài</a>
+    <a href="/history" class="nav-item">Lịch Sử Làm Bài</a>
   </div>
   <div class="nav-group nav-right">
-    <a href="thongtincanhan" class="nav-item"><img src="{% static './icon/149071.png' %}" class="nav-user-img">
+    <a href="/personal-info" class="nav-item"><img src="{% static './icon/149071.png' %}" class="nav-user-img">
       {{ request.session.name }}
     </a>
-    <a href="logout" class="nav-item nav-logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+    <a href="/logout" class="nav-item nav-logout"><i class="fa-solid fa-right-from-bracket"></i></a>
   </div>
   {% elif request.session.position == 'teacher' %}
   <div class="nav-group nav-left">
@@ -79,10 +79,10 @@
     <a href="CreateTestServlet" class="nav-item">Tạo bài thi</a>
   </div>
   <div class="nav-group nav-right">
-    <a href="thongtincanhan" class="nav-item"><img src="{% static './icon/149071.png' %}" class="nav-user-img">
+    <a href="/personal-info" class="nav-item"><img src="{% static './icon/149071.png' %}" class="nav-user-img">
       {{ request.session.name }}
     </a>
-    <a href="logout" class="nav-item nav-logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+    <a href="/logout" class="nav-item nav-logout"><i class="fa-solid fa-right-from-bracket"></i></a>
   </div>
   {% else %}
   <div class="nav-group nav-left">
