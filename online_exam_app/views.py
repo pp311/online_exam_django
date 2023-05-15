@@ -173,10 +173,9 @@ class HistoryDoTestPageView(View):
 class ResultTestPageView(View):
     template_name = 'result_test.html'
     def get(self, request):# r bh sua cai j day
-        result = Result.objects.filter(User=User.objects.get(username=request.session['username']))
-        #result = Result.objects.filter(Test=test)
-        history = result.History.all().values()
-        return render(request,self.template_name, {'result':result,'history':history})
+        result = Result.objects.get(User=User.objects.get(username=request.session['username']))
+        
+        return render(request,self.template_name, {'result':result})
 class ViewTestAllStudentsPageView(View):
     template_name = 'view_test_all_students.html'
     def get(self, request):
@@ -184,4 +183,6 @@ class ViewTestAllStudentsPageView(View):
         test = Test.objects.get(IDTest=id_test)
         result_list = Result.objects.filter(Test=test)
         #id-test dau ra
-        return render(request,self.template_name, {'result_list':result_list})
+        queryset = Result.objects.all()
+        queryset_dict = [{'Grade': item.Grade, 'SubmitTime': item.SubmitTime,'Name':UserProfile.objects.get(User=item.User).Name} for item in queryset]
+        return render(request,self.template_name, {'result_list':result_list,'queryset_dict':queryset_dict})

@@ -30,23 +30,23 @@
         <tbody>
 	        {% for test in test_list %}
 	        	<tr>
-		            <td>{{test.IDTest}}</td>
+		            <td>{{test.TestName}}</td>
 		            <td>{{test.NumberQuestion}} câu</td>
                 <td>{{test.Time}} phút</td>
                 <td>{{test.DateTest}}</td>
                 <td> 
                 {% if request.session.position == 'student' %} 
-                  <a href = ''>{{ user_action }}</a>
+                  <a href = '/do-test/?id-test={{ test.IDTest }}'>{{ user_action }}</a>
                 {% else %}
                   <a href = '/view-test-all-students/?id-test={{ test.IDTest }}'>{{ user_action }}</a>
                 {% endif %}
-              </td>
-              <td> 
+                </td>
+                
                 {% if request.session.position == 'admin' %} 
-                  <a href = ''> Xóa</a>
+                <td><a href = ''> Xóa</a></td>
               
                 {% endif %}
-              </td>
+                
             </tr>
           {%  endfor  %}
 		            
