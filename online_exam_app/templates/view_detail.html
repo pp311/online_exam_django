@@ -1,0 +1,155 @@
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, lastial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    .top {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+    .left{
+      width: 60%;
+    }
+    [name=f1] {
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0ebf8;
+    }
+    .content{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 70%;
+      flex-direction: column;
+      background-color: #f0ebf8;
+    }
+    .header{
+      padding: 20px;
+      padding-left: 40px;
+      border-radius: 8px;
+      background-color: white;
+      width: 100%;
+    }
+    .Question{
+      padding: 30px 20px 20px 40px;
+      padding-left: 40px;
+      border-radius: 8px;
+      background-color: white;
+      margin-bottom: 20px;    
+      width: 100%;
+      
+    }
+    .statement{
+    	margin-bottom: 20px;
+    }
+    hr{
+	    border: 0;
+	    clear: both;
+	    display: block;
+	    width: 100%;
+	    background-color: gray;
+	    height: 1px;
+  	}
+  </style>
+  <body>
+    {% include 'navbar.html' %}
+    <form name="f1" method="post">
+      {% csrf_token %}
+      <div class="content">
+        <div class="header">
+          <h3 style="text-align: center">KẾT QUẢ BÀI THI : {{test.TestName}}</h3>
+
+          <div class="hd">
+             <span class="top left">
+              Môn thi:
+              <label>{{subject.SubjectName}}</label>
+            </span>
+            
+            <span class="top right"> 
+              Thời gian thi: <label>{{test.Time}} phút</label>
+            </span>
+  
+          </div>
+  
+          <div class="hd">
+  
+            <span class="top left">
+              Ngày thi: <label> {{test.DateTest}}</label>
+            </span>
+            
+            <span class="top right">
+              Số câu:
+              <label>{{test.NumberQuestion}}</label>
+            </span>
+            
+          </div>
+  
+          <div class="hd">
+  
+            <span class="top left">
+              Sinh viên: <label> {{userprofile.Name}}</label>
+            </span>
+            
+            <span class="top right">
+              Số điểm:
+              <label>{{result.Grade}}</label>
+            </span>
+            
+            <span class="top right">
+              Thời gian nộp:
+              <label>{{result.SubmitTime}}</label>
+            </span>
+            
+          </div>
+          <div class="hd">
+            <span class="top left">
+              Thời gian nộp:
+              <label>{{result.SubmitTime}}</label>
+            </span>
+            
+          </div>
+         </div>
+			<hr>        
+      {% for i, question in list_question|get_enumerate %}
+      <div class='Question'>
+        <div class='statement'>Câu {{ i|add:"1" }}: <label>
+            {{ question.Content }}
+          </label></div>
+        {% for answer in list_answer %}
+        {% if answer.Question_id == question.IDQuestion %}
+        <div class='statement'>
+          {% if not question.MultipleChoice %}
+            {% if answer.IDAnswer|to_str in list_history %}
+              <input type='radio' name='group{{ question.IDQuestion }}' value='{{ answer.IDAnswer }}' checked disabled /> <label>{{answer.Content}}</label> <input type='image' {% if answer.IsCorrectAnswer %} src="{% static './icon/correct.png' %}" width='20px' {% else %} src="{% static './icon/wrong.png' %}"  width='15px' {% endif %} />
+            {% else %}
+              <input type='radio' name='group{{ question.IDQuestion }}' value='{{ answer.IDAnswer }}' disabled/> <label>{{answer.Content}}</label> <input {% if answer.IsCorrectAnswer %} type='image' src="{% static './icon/correct.png' %}" width='20px' {% else %} type='hidden' {% endif %} />
+            {% endif %}
+          {% else %}
+            {% if answer.IDAnswer|to_str in list_history %}
+              <input type='checkbox' name='cb{{ question.IDQuestion }}' value='{{ answer.IDAnswer }}' checked disabled/> <label>{{answer.Content}}</label> <input type='image' {% if answer.IsCorrectAnswer %} src="{% static './icon/correct.png' %}" width='20px' {% else %} src="{% static './icon/wrong.png' %}" width='15px'{% endif %}   />
+            {% else %}
+              <input type='checkbox' name='cb{{ question.IDQuestion }}' value='{{ answer.IDAnswer }}' disabled/> <label>{{answer.Content}}</label> <input {% if answer.IsCorrectAnswer %} type='image' src="{% static './icon/correct.png' %}" width='20px' {% else %} type='hidden' {% endif %} />
+            {% endif %}
+            
+          {% endif %}
+          
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+      
+
+          	<div style="width: 106%; text-align: center"><input type='submit' value='Quay lại' style='padding:10px; border-radius: 20px;' /></div>
+          </div> 
+
+    </form>
+  </body>
+</html>

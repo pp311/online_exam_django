@@ -43,7 +43,7 @@ class Answer(models.Model):
     IsCorrectAnswer = models.BooleanField()
     Question = models.ForeignKey(Question, on_delete=models.CASCADE)
     def __str__(self):
-        return str(self.Question.IDQuestion) + " " + str(self.IDAnswer)
+        return str(self.IDAnswer)
 
 class Result(models.Model):
     IDResult = models.AutoField(primary_key=True)

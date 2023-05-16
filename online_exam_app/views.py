@@ -20,6 +20,9 @@ def get_range(value):
 @register.filter
 def get_enumerate(value):
     return enumerate(value)
+@register.filter
+def to_str(value):
+    return str(value)
 # Create your views here.
 def main(request):
   return HttpResponse("Home Page")
@@ -242,5 +245,23 @@ class ViewTestAllStudentsPageView(View):
         result_list = Result.objects.filter(Test=test)
         #id-test dau ra
         queryset = Result.objects.all()
-        queryset_dict = [{'Grade': item.Grade, 'SubmitTime': item.SubmitTime,'Name':UserProfile.objects.get(User=item.User).Name} for item in queryset]
+        queryset_dict = [{'IDResult':item.IDResult,'Grade': item.Grade, 'SubmitTime': item.SubmitTime,'Name':UserProfile.objects.get(User=item.User).Name} for item in queryset]
         return render(request,self.template_name, {'result_list':result_list,'queryset_dict':queryset_dict})
+class ViewDetailPageView(View):
+    template_name = 'view_detail.html'
+    def get(self, request):
+        id_result = request.GET.get('id-result')
+        result = Result.objects.get(IDResult=id_result)
+        list_history = result.History.all()
+        test = result.Test
+        subject = test.Subject
+        list_question = Question.objects.filter(Test=test)
+        # list_question = [
+        list_answer = Answer.objects.filter(Question__in=list_question).values()
+        userprofile = UserProfile.objects.get(User=result.User)
+        list_answer_history = []
+        for i in range(len(list_history)):
+            list_answer_history.append(str(list_history[i]))
+        # print(str(list_history[0]))
+        print(list_answer_history)
+        return render(request,self.template_name, {'result':result,'list_history':list_answer_history,'test':test,'subject':subject,'list_question':list_question,'list_answer':list_answer,'userprofile':userprofile})
