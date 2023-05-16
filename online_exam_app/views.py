@@ -179,13 +179,10 @@ class DoTestPageView(View):
         test = Test.objects.get(IDTest=test_id)
         questions = Question.objects.filter(Test=test)
         result = Result.objects.create(Test=test, User=User.objects.get(username=request.session['username']), SubmitTime=submit_time, Grade=0)
-        print(test_id)
         grade = 0.0
         scd = 0.0
-        count = 0
         for question in questions:
             if not question.MultipleChoice:
-                print(question.Content)
                 answer = int(request.POST['group' + str(question.IDQuestion)])
                 answer_obj = Answer.objects.get(IDAnswer=answer)
                 if answer_obj.IsCorrectAnswer:
@@ -193,22 +190,24 @@ class DoTestPageView(View):
                 result.History.add(answer_obj)
             else:
                 list_answer = request.POST.getlist('cb' + str(question.IDQuestion))
-                print(list_answer)
-                answer_count = Answer.objects.filter(Question=question).count()
+                correct_answer_count = Answer.objects.filter(Question=question, IsCorrectAnswer=True).count()
                 dung = 0.0
                 for answer in list_answer:
                     answer_obj = Answer.objects.get(IDAnswer=int(answer))
                     if answer_obj.IsCorrectAnswer:
-                        dung += 1/answer_count
+                        dung += 1/correct_answer_count
                     else:
-                        dung -= 1/answer_count
+                        dung -= 1/correct_answer_count
                     result.History.add(answer_obj)
+                    print(dung)
                 if dung > 0:
                     scd += dung
-            grade = scd / questions.count() * 10
-            result.Grade = grade
-            result.save() 
-        return redirect('/test-list')
+
+        grade = scd / questions.count() * 10
+        print(scd)
+        result.Grade = grade
+        result.save() 
+        return redirect('/result/?id-result=' + str(result.IDResult))
         
         
 class TestListPageView(View):
@@ -217,18 +216,24 @@ class TestListPageView(View):
         user_action = "Làm bài" if request.session['position'] == 'student' else 'Xem chi tiết'
         test_list = Test.objects.all().values()
         return render(request, self.template_name, {'user_action':user_action,'test_list':test_list})
+
+
 class HistoryDoTestPageView(View):
     template_name = 'history_do_test.html'
     def get(self, request):
         user = User.objects.get(username=request.session['username'])
         result_list = Result.objects.filter(User=user)
         return render(request,self.template_name,{'user':user,'result_list':result_list})
+
+
 class ResultTestPageView(View):
     template_name = 'result_test.html'
-    def get(self, request):# r bh sua cai j day
-        result = Result.objects.get(User=User.objects.get(username=request.session['username']))
-        
+    def get(self, request):
+        id_result = request.GET.get('id-result')
+        result = Result.objects.get(IDResult=id_result)
         return render(request,self.template_name, {'result':result})
+
+
 class ViewTestAllStudentsPageView(View):
     template_name = 'view_test_all_students.html'
     def get(self, request):
