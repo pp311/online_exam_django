@@ -11,6 +11,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from .forms import LoginForm, CreateUserForm, PersonalInfoForm
 import datetime
+from django.template.defaulttags import register
+
+@register.filter
+def get_range(value):
+    return range(value)
+
+@register.filter
+def get_enumerate(value):
+    return enumerate(value)
 # Create your views here.
 def main(request):
   return HttpResponse("Home Page")
@@ -38,7 +47,7 @@ class LoginPageView(View):
                 request.session['position'] = user_profile.Position
                 request.session['name'] = user_profile.Name
                 request.session.modified = True
-                return redirect('/')
+                return redirect('/test-list')
             else:
                 return HttpResponse("Invalid username or password")
         else:
@@ -130,33 +139,77 @@ class CreateTestPageView(View):
         subject = Subject.objects.get(IDSubject=subject_id)
 
         test = Test.objects.create(User=user, Subject=subject, TestName=test_name, DateTest=date_test, Time=time_test, NumberQuestion=number_of_questions)
-        list_question = []
-        list_answer = []
         list_multichoice = request.POST.getlist('cb')
-        h = 0
-        for i in range(number_of_questions):
-            statements = request.POST.getlist('txt' + str(i+1))
-            if list_multichoice != None and len(list_multichoice) > h and int(list_multichoice[h]) == i+1:
-                list_question.append(Question.objects.create(Test=test, Content=statements[0], MultipleChoice=True))
-                h += 1
-                cb_answers = request.POST.getlist('cb' + str(i+1))
+        multichoice_question_index = 0
+        for i in range(1, number_of_questions + 1):
+            statements = request.POST.getlist('txt' + str(i))
+            if list_multichoice != None and len(list_multichoice) > multichoice_question_index and int(list_multichoice[multichoice_question_index]) == i:
+                current_question = Question.objects.create(Test=test, Content=statements[0], MultipleChoice=True)
+                multichoice_question_index += 1
+                cb_answers = request.POST.getlist('cb' + str(i))
                 k = 0
                 for j in range(1, len(statements)):
                     is_correct = False
                     if len(cb_answers) > k and int(cb_answers[k]) == j:
                         is_correct = True
                         k += 1 
-                    list_answer.append(Answer.objects.create(Question=list_question[i], Content=statements[j], IsCorrectAnswer=is_correct))
-            
+                    Answer.objects.create(Question=current_question, Content=statements[j], IsCorrectAnswer=is_correct)
             else:
-                list_question.append(Question.objects.create(Test=test, Content=statements, MultipleChoice=False))
-                answer = request.POST['group' + str(i+1)]
+                current_question = Question.objects.create(Test=test, Content=statements[0], MultipleChoice=False)
+                answer = request.POST['group' + str(i)]
                 for j in range(1, len(statements)):
                     is_correct = False
                     if int(answer) == j:
                         is_correct = True
-                    list_answer.append(Answer.objects.create(Question=list_question[i], Content=statements[j], IsCorrectAnswer=is_correct))
+                    Answer.objects.create(Question=current_question, Content=statements[j], IsCorrectAnswer=is_correct)
+        return redirect('/test-list')
 
+class DoTestPageView(View):
+    template_name = 'do_test.html'
+    def get(self, request):
+        test_id = request.GET['id-test']
+        test = Test.objects.get(IDTest=test_id)
+        questions = Question.objects.filter(Test=test)
+        answers = Answer.objects.filter(Question__in=questions).values()
+        questions = questions.values()
+        return render(request, self.template_name, {'test': test, 'questions': questions, 'answers': answers})
+    def post(self, request):
+        test_id = request.GET['id-test']
+        submit_time = datetime.datetime.now()
+        test = Test.objects.get(IDTest=test_id)
+        questions = Question.objects.filter(Test=test)
+        result = Result.objects.create(Test=test, User=User.objects.get(username=request.session['username']), SubmitTime=submit_time, Grade=0)
+        print(test_id)
+        grade = 0.0
+        scd = 0.0
+        count = 0
+        for question in questions:
+            if not question.MultipleChoice:
+                print(question.Content)
+                answer = int(request.POST['group' + str(question.IDQuestion)])
+                answer_obj = Answer.objects.get(IDAnswer=answer)
+                if answer_obj.IsCorrectAnswer:
+                    scd += 1
+                result.History.add(answer_obj)
+            else:
+                list_answer = request.POST.getlist('cb' + str(question.IDQuestion))
+                print(list_answer)
+                answer_count = Answer.objects.filter(Question=question).count()
+                dung = 0.0
+                for answer in list_answer:
+                    answer_obj = Answer.objects.get(IDAnswer=int(answer))
+                    if answer_obj.IsCorrectAnswer:
+                        dung += 1/answer_count
+                    else:
+                        dung -= 1/answer_count
+                    result.History.add(answer_obj)
+                if dung > 0:
+                    scd += dung
+            grade = scd / questions.count() * 10
+            result.Grade = grade
+            result.save() 
+        return redirect('/test-list')
+        
         
 class TestListPageView(View):
     template_name = 'test_list.html'

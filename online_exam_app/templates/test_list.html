@@ -36,17 +36,16 @@
                 <td>{{test.DateTest}}</td>
                 <td> 
                 {% if request.session.position == 'student' %} 
-                  <a href = ''>{{ user_action }}</a>
+                <a href = '/do-test/?id-test={{ test.IDTest }}'>{{ user_action }}</a>
                 {% else %}
                   <a href = '/view-test-all-students/?id-test={{ test.IDTest }}'>{{ user_action }}</a>
                 {% endif %}
               </td>
-              <td> 
-                {% if request.session.position == 'admin' %} 
+              {% if request.session.position == 'admin' %} 
+                <td> 
                   <a href = ''> Xóa</a>
-              
-                {% endif %}
-              </td>
+                </td>
+              {% endif %}
             </tr>
           {%  endfor  %}
 		            

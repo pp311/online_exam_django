@@ -91,7 +91,6 @@
         </div>
 
         <div class="hd">
-          Hoa Xuan
           <span class="top left">
             Ngày thi: <input type="datetime-local" name="date-test" value="{{ current_datetime }}" />
           </span>
@@ -247,7 +246,7 @@
                 + "<div class='statement st" + i + "'><span class='sp" + i + "'><input type='radio' name='group" + i + "' value='" + 2 + "' /></span><textarea rows='1' cols='50' name='txt" + i + "'></textarea> <input type='image' src={% static 'icon/cross.png' %} onclick='removeStatement(" + i + "." + 2 + ")' width='20px'></div>"
                 + "<div class='statement st" + i + "'><span class='sp" + i + "'><input type='radio' name='group" + i + "' value='" + 3 + "' /></span><textarea rows='1' cols='50' name='txt" + i + "'></textarea> <input type='image' src={% static 'icon/cross.png' %} onclick='removeStatement(" + i + "." + 3 + ")' width='20px'></div>"
                 + "<div class='statement st" + i + "'><span class='sp" + i + "'><input type='radio' name='group" + i + "' value='" + 4 + "' /></span><textarea rows='1' cols='50' name='txt" + i + "'></textarea> <input type='image' src={% static 'icon/cross.png' %} onclick='removeStatement(" + i + "." + 4 + ")' width='20px'></div>"
-                + "<div class='statement' id='bAdd" + i + "'><input type='image' src={% static 'icon/cross.png' %} onclick='addElements(" + i + "); return false;' width='16px'> Thêm câu trả lời</div><br></div>";
+                + "<div class='statement' id='bAdd" + i + "'><input type='image' src={% static 'icon/plus.png' %} onclick='addElements(" + i + "); return false;' width='16px'> Thêm câu trả lời</div><br></div>";
             }
 
             tag.insertAdjacentHTML(

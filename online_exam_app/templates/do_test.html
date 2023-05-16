@@ -1,0 +1,199 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, lastial-scale=1.0" />
+  <title>Document</title>
+</head>
+<style>
+  .top {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+
+  .left {
+    width: 60%;
+  }
+
+  [name=f1] {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0ebf8;
+  }
+
+  .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+    flex-direction: column;
+    background-color: #f0ebf8;
+  }
+
+  .header {
+    padding: 20px;
+    padding-left: 40px;
+    border-radius: 8px;
+    background-color: white;
+    width: 100%;
+  }
+
+  .Question {
+    padding: 30px 20px 20px 40px;
+    padding-left: 40px;
+    border-radius: 8px;
+    background-color: white;
+    margin-bottom: 20px;
+    width: 100%;
+
+  }
+
+  .statement {
+    margin-bottom: 20px;
+  }
+
+  hr {
+    border: 0;
+    clear: both;
+    display: block;
+    width: 100%;
+    background-color: gray;
+    height: 1px;
+  }
+
+  .countdown {
+    position: sticky;
+    top: 200px;
+    padding: 20px;
+    border: 3px solid red;
+    width: 100px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 24px;
+  }
+
+  .countdown p {
+    margin: 0;
+  }
+</style>
+
+<body>
+  {% include 'navbar.html' %}
+  <div class="countdown">
+    <input type="hidden" id="time" value="{{ test.Time }}">
+    <p id="clock">00:00</p>
+  </div>
+  <form name="f1" onSubmit='return checkAll()' method="post">
+    {% csrf_token %}
+    <div class="content">
+      <div class="header">
+        <h3 style="text-align: center">
+          {{ test.TestName }}
+        </h3>
+
+        <div class="hd">
+          <span class="top left">
+            Môn thi:
+            <label>
+              {{ test.SubjectName }}
+            </label>
+          </span>
+
+          <span class="top right">
+            Thời gian thi: <label>
+              {{ test.Time }} phút
+            </label>
+          </span>
+
+        </div>
+
+        <div class="hd">
+          <span class="top left">
+            Ngày thi: <label>
+              {{ test.DateTest }}
+            </label>
+          </span>
+
+          <span class="top right">
+            Số câu:
+            <label>
+              {{ test.NumberQuestion }}
+            </label>
+          </span>
+
+        </div>
+
+      </div>
+      <hr>
+      {% for i, question in questions|get_enumerate %}
+      <div class='Question'>
+        <div class='statement'>Câu {{ i|add:"1" }}: <label>
+            {{ question.Content }}
+          </label></div>
+        {% for ans in answers %}
+        {% if ans.Question_id == question.IDQuestion %}
+        <div class='statement'>
+          {% if not question.MultipleChoice %}
+          <input type='radio' name='group{{ question.IDQuestion }}' value='{{ ans.IDAnswer }}' />
+          {% else %}
+          <input type='checkbox' name='cb{{ questions.IDQuestion }}' value='{{ ans.IDAnswer }}' />
+          {% endif %}
+          <label>
+            {{ ans.Content }}
+          </label>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+      <div style="width: 106%;"><input type='submit' value='Hoàn thành' style='padding:10px; border-radius: 20px' /><a
+          href='' onclick='removeAll(); return false;' style='float:right'>Xoá hết câu trả lời</a></div>
+    </div>
+
+  </form>
+
+  <script>
+    const clock = document.getElementById("clock");
+    let time = document.getElementById("time").value * 60;
+
+    let min = Math.floor(time / 60);
+
+    let sec = time - min * 60;
+
+    let down = setInterval(() => {
+      sec--;
+      if (sec < 0) {
+        min--;
+        sec = 59;
+      }
+      if (min < 0) {
+        const form = document.f1.submit();
+        clearInterval(down);
+      }
+      clock.innerHTML = min + ":" + sec;
+
+
+    }, 1000);
+
+    function removeAll() {
+      var choice = document.getElementsByTagName("input");
+      if (choice != null) {
+        for (var i = 0; i < choice.length; i++) {
+          if ((choice[i].name.indexOf("cb") == 0 || choice[i].name.indexOf("group") == 0) && choice[i].checked) choice[i].checked = false;
+        }
+      }
+    }
+
+    function checkAll() {
+      var val = confirm("Bạn có chắc chắn nộp bài thi? Sau khi nộp sẽ không thể chỉnh sửa.");
+      return val;
+    }
+
+  </script>
+</body>
+
+</html>
