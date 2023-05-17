@@ -244,7 +244,7 @@ class ViewTestAllStudentsPageView(View):
         test = Test.objects.get(IDTest=id_test)
         result_list = Result.objects.filter(Test=test)
         #id-test dau ra
-        queryset = Result.objects.all()
+        queryset = result_list.all()
         queryset_dict = [{'IDResult':item.IDResult,'Grade': item.Grade, 'SubmitTime': item.SubmitTime,'Name':UserProfile.objects.get(User=item.User).Name} for item in queryset]
         return render(request,self.template_name, {'result_list':result_list,'queryset_dict':queryset_dict})
 class ViewDetailPageView(View):
@@ -265,3 +265,11 @@ class ViewDetailPageView(View):
         # print(str(list_history[0]))
         print(list_answer_history)
         return render(request,self.template_name, {'result':result,'list_history':list_answer_history,'test':test,'subject':subject,'list_question':list_question,'list_answer':list_answer,'userprofile':userprofile})
+class DeleteTestPageView(View):
+    template_name = 'test_list.html'
+    def get(self, request):
+        id_test = request.GET.get('id-test')
+        test = Test.objects.get(IDTest=id_test)
+        test.delete()
+        return redirect('/test-list')
+    

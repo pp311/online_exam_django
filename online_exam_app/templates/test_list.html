@@ -43,7 +43,7 @@
               </td>
               {% if request.session.position == 'admin' %} 
                 <td> 
-                  <a href = ''> Xóa</a>
+                  <a href = '/delete-test/?id-test={{ test.IDTest }}'> Xóa</a>
                 </td>
               {% endif %}
             </tr>

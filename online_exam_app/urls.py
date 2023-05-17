@@ -15,4 +15,5 @@ urlpatterns = [
     path('result/', views.ResultTestPageView.as_view(), name='result'),
     path('view-test-all-students/', views.ViewTestAllStudentsPageView.as_view(), name='view_test_all_students'),
     path('view-detail/', views.ViewDetailPageView.as_view(), name='view_detail'),
+    path('delete-test/', views.DeleteTestPageView.as_view(), name='delete_test'),
 ]
